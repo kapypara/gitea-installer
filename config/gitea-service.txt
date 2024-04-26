@@ -1,6 +1,3 @@
-Requires=mysql.service
-Requires=mariadb.service
-
 [Service]
 RestartSec=2s
 Type=simple

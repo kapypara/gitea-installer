@@ -23,11 +23,11 @@ fi
 shell_arguments=$1
 gitea_latest_version=${1:-$(curl --silent "https://api.github.com/repos/go-gitea/gitea/releases/latest" | jq -r '.tag_name' 2>&1 | sed -e 's|.*-||' -e 's|^v||')}
 gitea_download_url_default="https://github.com/go-gitea/gitea/releases/download/v${gitea_latest_version}/gitea-${gitea_latest_version}-linux-amd64"
-deineIP="$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)"
+deineIP="$(/sbin/ip -o -4 addr list | grep en | awk '{print $4}' | cut -d/ -f1)"
 pwd="$(pwd)"
-dbuser="giteauser"
-dbpassword=$(date +%s | sha256sum | base64 | head -c 32)
-dbtable="giteadb"
+#dbuser="giteauser"
+#dbpassword=$(date +%s | sha256sum | base64 | head -c 32)
+#dbtable="giteadb"
 
 if [[ "$shell_arguments" == "--github-ci-test" ]]; then
   run_ci_tests=1
@@ -63,11 +63,11 @@ echo "You choose: ${giteadownloader}"
 echo ""
 echo ""
 echo "//-->> Update"
-apt-get update -q >> /dev/null 2>&1
-apt-get upgrade -q -y >> /dev/null 2>&1
+apt-get update -q #>> /dev/null 2>&1
+apt-get upgrade -q -y #>> /dev/null 2>&1
 
 echo "//-->> Install packages"
-apt-get install git mariadb-server mariadb-client nano -q -y >> /dev/null 2>&1
+apt-get install git #mariadb-server mariadb-client nano -q -y >> /dev/null 2>&1
 
 echo "//-->> Create user: git"
 adduser --system --shell /bin/bash --gecos 'Git Version Control' --group --disabled-password --home /home/git git >> /dev/null 2>&1
@@ -89,11 +89,11 @@ chown root:git /etc/gitea
 chmod 770 /etc/gitea
 
 # insert gitea user
-echo "//-->> Prepare database"
-mysql -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpassword';"
-mysql -e "CREATE DATABASE $dbtable;"
-mysql -e "GRANT ALL PRIVILEGES ON $dbtable . * TO '$dbuser'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
+# echo "//-->> Prepare database"
+# mysql -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpassword';"
+# mysql -e "CREATE DATABASE $dbtable;"
+# mysql -e "GRANT ALL PRIVILEGES ON $dbtable . * TO '$dbuser'@'localhost';"
+# mysql -e "FLUSH PRIVILEGES;"
 
 # set system variable
 echo "//-->> Set system variables"
